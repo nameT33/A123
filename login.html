@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% block title %} 登录 {% endblock title %}
+{% block body %}
+
+<style>
+    /* 现代化设计系统 */
+    :root {
+        --primary: #22c55e;        /* 清新绿色 */
+        --primary-dark: #16a34a;   /* 深绿 */
+        --primary-light: #dcfce7;  /* 浅绿背景 */
+        --secondary: #0ea5e9;      /* 科技蓝 */
+        --accent: #f59e0b;         /* 活力橙 */
+        --dark: #1e293b;           /* 深 slate */
+        --light: #f8fafc;          /* 近白背景 */
+        --white: #ffffff;
+        --gray: #64748b;
+        --gray-light: #cbd5e1;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --radius: 16px;
+        --radius-sm: 8px;
+    }
+
+    /* 英雄区 - 降低绿色透明度，显示麦子背景 */
+    .hero-section {
+        position: relative;
+        height: 35vh;
+        min-height: 280px;
+        background-image: url("/static/images/4.jpeg");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* 绿色渐变遮罩 - 透明度调低 */
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg,
+            rgba(22, 101, 52, 0.15) 0%,
+            rgba(34, 197, 94, 0.20) 50%,
+            rgba(22, 163, 74, 0.15) 100%
+        );
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        color: var(--white);
+    }
+
+    .hero-content h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.2);
+        letter-spacing: -0.02em;
+    }
+
+    .breadcrumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        background: rgba(0,0,0,0.25);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        backdrop-filter: blur(8px);
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .breadcrumb a {
+        color: var(--white);
+        text-decoration: none;
+        transition: opacity 0.3s;
+    }
+
+    .breadcrumb a:hover {
+        opacity: 0.8;
+    }
+
+    .breadcrumb-separator {
+        opacity: 0.7;
+    }
+
+    /* 登录主区域 */
+    .login-section {
+        min-height: calc(100vh - 35vh);
+        background: linear-gradient(180deg, var(--primary-light) 0%, var(--light) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        position: relative;
+    }
+
+    .login-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+        opacity: 0.08;
+        border-radius: 50%;
+    }
+
+    /* 登录卡片 - 玻璃拟态 */
+    .login-card {
+        width: 100%;
+        max-width: 440px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-xl);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+        position: relative;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    }
+
+    .login-header {
+        padding: 2.5rem 2rem 1.5rem;
+        text-align: center;
+    }
+
+    .login-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3);
+    }
+
+    .login-icon svg {
+        width: 32px;
+        height: 32px;
+        color: white;
+    }
+
+    .login-header h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .login-header p {
+        color: var(--gray);
+        font-size: 0.95rem;
+    }
+
+    /* 表单区域 */
+    .login-form {
+        padding: 0 2rem 2.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+        transition: color 0.3s;
+    }
+
+    .form-control {
+        width: 100%;
+        height: 52px;
+        padding: 0 1rem 0 2.75rem;
+        border: 2px solid var(--gray-light);
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        background: var(--white);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+    }
+
+    .form-control:focus + .input-icon {
+        color: var(--primary);
+    }
+
+    .btn-login {
+        width: 100%;
+        height: 52px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: var(--white);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-login::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-login:hover::before {
+        left: 100%;
+    }
+
+    .btn-login:active {
+        transform: translateY(0);
+    }
+
+    .signup-link {
+        text-align: center;
+        padding: 1.5rem 2rem;
+        background: var(--light);
+        border-top: 1px solid var(--gray-light);
+    }
+
+    .signup-link p {
+        color: var(--gray);
+        font-size: 0.95rem;
+        margin: 0;
+    }
+
+    .signup-link a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .signup-link a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    /* 页脚 */
+    .footer-modern {
+        background: var(--dark);
+        color: var(--white);
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .footer-brand {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .footer-tagline {
+        font-size: 0.875rem;
+        opacity: 0.8;
+        letter-spacing: 0.05em;
+    }
+
+    /* 响应式 */
+    @media (max-width: 480px) {
+        .hero-section {
+            height: 25vh;
+            min-height: 200px;
+        }
+
+        .login-card {
+            border-radius: 0;
+            box-shadow: none;
+            background: var(--white);
+        }
+
+        .login-section {
+            padding: 0;
+            background: var(--white);
+        }
+
+        .login-header {
+            padding: 2rem 1.5rem 1rem;
+        }
+
+        .login-form {
+            padding: 0 1.5rem 2rem;
+        }
+    }
+</style>
+
+<!-- 英雄区 -->
+<section class="hero-section">
+    <div class="hero-content">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('hello_world') }}">首页</a>
+            <span class="breadcrumb-separator">/</span>
+            <span>登录</span>
+        </nav>
+        <h1>欢迎回来</h1>
+    </div>
+</section>
+
+<!-- 登录区域 -->
+<section class="login-section">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <h2>用户登录</h2>
+            <p>请输入账号密码登录您的账户</p>
+        </div>
+
+        <form class="login-form" action="" method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                <label class="form-label" for="username">用户名</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    {{ form.username(class="form-control", placeholder="请输入用户名") }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">密码</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    {{ form.password(class="form-control", placeholder="请输入密码") }}
+                </div>
+            </div>
+
+            {{ form.submit(class="btn-login", value="立即登录") }}
+        </form>
+
+        <div class="signup-link">
+            <p>还没有账号？<a href="{{ url_for('signup') }}">立即注册</a></p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer-modern">
+    <div class="footer-content">
+        <div class="footer-brand">智慧农业平台</div>
+        <div class="footer-tagline">深度学习技术 • 助力绿色农业 🌱</div>
+    </div>
+</footer>
+
+{% endblock body %}
